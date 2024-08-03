@@ -831,6 +831,8 @@ submit_for_comsol(){
 	COMSOL_BASE_COMMAND="batch -mpibootstrap slurm -inputfile ${inputmph} -outputfile ${outputmph} -tmpdir ${TMPDIR} -recoverydir ${RECDIR}  -alivetime 15"
 	echo ${CALL_COMSOL_AS}' '${COMSOL_BASE_COMMAND}' '${COMSOL_EXTRA_}' '${COMSOL_CONTINUE} >> $whattimeisit'_submit_job.sh'
 	sbatch $whattimeisit'_submit_job'.sh
+ 	pwd
+	squeue -u $userame -l --start
 }
 # ----------------------------- watcher active? 
 # function watcher - contact MAK
