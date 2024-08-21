@@ -82,7 +82,7 @@ get_membership(){
 			break 
 		else
 			echo "you $username do NOT belong to the specified group $groupname."
-   			echo "though you $username do belong to these groups: "
+			echo "though you $username do belong to these groups: "
 			sacctmgr show assoc -P format=User,Account where user=$username,account=$groupname
 			echo "please try again."
 		fi
@@ -675,7 +675,7 @@ get_desk_ready(){
 			chmod -R 755 $whattimeisit
 			echo 'made ' $whattimeisit ' accessible to all nodes' 
 			echo 'enetering ' $whattimeisit
-			cd $whattimeisit
+			cd $whattimeisit # <<< relative pathes 
 			pwd 
 			echo 'enetered ' $whattimeisit
 			echo 'creating temporary and recovery directories ....'
@@ -683,8 +683,8 @@ get_desk_ready(){
 			echo 'created temporary and recovery directories.'
 			chmod -R 755 tmp rec
 			echo 'made temporary and recovery directories accessible to all nodes.'
-			RECDIR=$whattimeisit/rec
-			TMPDIR=$whattimeisit/tmp
+			RECDIR=rec #$whattimeisit/rec
+			TMPDIR=tmp #$whattimeisit/tmp
 			;;
 		"resume")
 			;;
@@ -858,7 +858,7 @@ running_for_specific_parameter(){
 					done
 					# 
 					echo 'sent specifications to comsol call.'
-					COMSOL_PARAMS_='-pname '$list_of_parameters ' -plist ' $values_of_parameters
+					COMSOL_PARAMS_="-pname ${list_of_parameters} -plist ${values_of_parameters}"
 					break;;
 				*) 
 					echo "field left empty"
@@ -872,7 +872,7 @@ running_for_specific_parameter(){
 submit_for_comsol(){
 	logfilepath=$whattimeisit.log
 	COMSOL_BASE_COMMAND="batch -mpibootstrap slurm -inputfile ${inputmph} -outputfile ${outputmph} -batchlog ${logfilepath} -tmpdir ${TMPDIR} -recoverydir ${RECDIR}  -alivetime 15"
-	echo ${CALL_COMSOL_AS}' '${COMSOL_BASE_COMMAND}' '${COMSOL_EXTRA_}' '${COMSOL_CONTINUE}' '${COMSOL_PARAMS_}  >> $whattimeisit'_submit_job.sh'
+	echo ${CALL_COMSOL_AS}' '${COMSOL_BASE_COMMAND}' '${COMSOL_EXTRA_}' '${COMSOL_CONTINUE}' '${COMSOL_PARAMS_} >> $whattimeisit'_submit_job.sh'
 	sbatch $whattimeisit'_submit_job'.sh
 	pwd
 	squeue -u $username -l --start
@@ -896,13 +896,13 @@ while true; do
 			"new")
 				echo "preparing for new submission."
 				this_is_new_job 		# tasks for new job 
-    				running_for_specific_parameter
+				running_for_specific_parameter
 				submit_for_comsol 		# running comsol
 				break;;
 			"resume")
 				echo "preparing for a terminated job."
 				this_is_resume_job		# tasks for resume job
-    				running_for_specific_parameter
+				running_for_specific_parameter 
 				submit_for_comsol 		# running comsol
 				break;;
 			*) 
