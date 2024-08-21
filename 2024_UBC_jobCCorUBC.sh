@@ -896,11 +896,13 @@ while true; do
 			"new")
 				echo "preparing for new submission."
 				this_is_new_job 		# tasks for new job 
+    				running_for_specific_parameter
 				submit_for_comsol 		# running comsol
 				break;;
 			"resume")
 				echo "preparing for a terminated job."
 				this_is_resume_job		# tasks for resume job
+    				running_for_specific_parameter
 				submit_for_comsol 		# running comsol
 				break;;
 			*) 
