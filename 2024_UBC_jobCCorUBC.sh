@@ -82,6 +82,8 @@ get_membership(){
 			break 
 		else
 			echo "you $username do NOT belong to the specified group $groupname."
+   			echo "though you $username do belong to these groups: "
+			sacctmgr show assoc -P format=User,Account where user=$username,account=$groupname
 			echo "please try again."
 		fi
 	done 
@@ -827,11 +829,50 @@ this_is_resume_job(){
 		fi 
 	done 
 }
+# ----------------------------- runs for a/list of specific parameter and value
+running_for_specific_parameter(){
+	read -p "is it a run for a specific parameter or list of parameters? (yes/no) = " itis4parameters
+	while true; do 
+		if [ -n $itis4parameters ]; then
+			case $itis4parameters in 
+				[Nn]*)
+					echo 'no specific paramter is set and sent - this is a normal run'
+					COMSOL_PARAMS_=' '
+					break;;
+				[Yy]*)
+					echo 'setting and sending a (list of) paramter(s) to COMSOL command line.'
+					read -p "how many parameters are to be specified? (1/2/.../n) = " itis4thismanyparameters
+					echo 'be prepared to specifiy paramter details once prompted .....'
+					list_of_parameters=""
+					values_of_parameters=""
+					for ((i=1; i<=itis4thismanyparameters; i++)); do
+						read -p "enter NAME of parameter #$i: " current_parameter_name
+						read -p "enter VALUE of parameter #$i ($current_parameter_name): " current_parameter_value
+						if [ $i -eq 1 ]; then
+							list_of_parameters="$current_parameter_name"
+							values_of_parameters="$current_parameter_value"
+						else
+							list_of_parameters="$list_of_parameters,$current_parameter_name"
+							values_of_parameters="$values_of_parameters,$current_parameter_value"
+						fi
+					done
+					# 
+					echo 'sent specifications to comsol call.'
+					COMSOL_PARAMS_='-pname '$list_of_parameters ' -plist ' $values_of_parameters
+					break;;
+				*) 
+					echo "field left empty"
+			esac 
+		else
+			echo 'field cannot left blank'
+		fi 
+	done 
+}
 # ----------------------------- running comsol 
 submit_for_comsol(){
 	logfilepath=$whattimeisit.log
 	COMSOL_BASE_COMMAND="batch -mpibootstrap slurm -inputfile ${inputmph} -outputfile ${outputmph} -batchlog ${logfilepath} -tmpdir ${TMPDIR} -recoverydir ${RECDIR}  -alivetime 15"
-	echo ${CALL_COMSOL_AS}' '${COMSOL_BASE_COMMAND}' '${COMSOL_EXTRA_}' '${COMSOL_CONTINUE} >> $whattimeisit'_submit_job.sh'
+	echo ${CALL_COMSOL_AS}' '${COMSOL_BASE_COMMAND}' '${COMSOL_EXTRA_}' '${COMSOL_CONTINUE}' '${COMSOL_PARAMS_}  >> $whattimeisit'_submit_job.sh'
 	sbatch $whattimeisit'_submit_job'.sh
 	pwd
 	squeue -u $username -l --start
