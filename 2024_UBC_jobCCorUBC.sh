@@ -177,7 +177,7 @@ initiate_sh_submit(){
 	echo "#SBATCH --error=$whattimeisit.%A.err" >> $whattimeisit'_submit_job'.sh
 	# 
 	if [ "$archfromselections" != "NONE" ]; then
-		echo "#SBATCH ----constraint=$archfromselections" >> $whattimeisit'_submit_job'.sh
+		echo "#SBATCH --constraint=$archfromselections" >> $whattimeisit'_submit_job'.sh
 	fi
 	#
 	#
@@ -202,9 +202,9 @@ get_cluster_name(){
             [Nn]* )
                 echo "user declined, something is wrong with calling slurm."
 				echo "please pick one of the following cluster names manually when prompt."
-				echo "sockeye, narval, bluga, cedar, graham, niagara"
+				echo "sockeye, narval, beluga, cedar, graham, niagara"
 				while true; do
-        			read -p "we are on?: sockeye, narval, bluga, cedar, graham, niagara. = " clusternamebyuser
+        			read -p "we are on?: sockeye, narval, beluga, cedar, graham, niagara. = " clusternamebyuser
 					if [ -n $clusternamebyuser ]; then
 						case $clusternamebyuser in
 							"sockeye")
@@ -213,8 +213,8 @@ get_cluster_name(){
 							"narval")
 								cluster_name="narval"
 								break;;
-							"bluga")
-								cluster_name="bluga"
+							"beluga")
+								cluster_name="beluga"
 								break;;
 							"cedar")
 								cluster_name="cedar"
@@ -354,7 +354,7 @@ options_on_narval(){
 	done
 }
 # ----------------------------- shows options on beluga
-options_on_bluga(){
+options_on_beluga(){
 	echo "option		RAMperCPU				AvailNodes			ARCH		isGPU"
 	echo "1				2.3GB	=92GB/40cores		160				Skylake		 	 "
 	echo "2				4.65GB	=186GB/40cores		589				Skylake		 	 "
@@ -602,8 +602,8 @@ show_cluster_options(){
 			options_on_narval
 			;;
 		#
-		"bluga")
-			options_on_bluga
+		"beluga")
+			options_on_beluga
 			;;
 		# 
 		"niagara")
