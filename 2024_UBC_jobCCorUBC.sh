@@ -181,6 +181,8 @@ initiate_sh_submit(){
 		echo "#SBATCH --constraint=$archfromselections" >> submit_job.sh
 	fi
 	#
+ 	# advising OS to handle large MPI memory unsafe process: comsol-java issue
+	echo "ulimit -s unlimited" >> submit_job.sh
 	#
 	#for line in {0..12}; do
 	#	content="line_$line"
