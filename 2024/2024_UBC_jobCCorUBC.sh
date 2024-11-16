@@ -22,7 +22,7 @@ comsolcleanup() {
         case $cleanupdecision in
             "yes")
                 echo "deleting all files in ./.comsol/ ...., it may take a while ...."
-                rm -rf ./.comsol/*
+                rm -rvf $SCRATCH/.comsol/* $HOME/.comsol/*
                 echo "deleted all files in ./.comsol/."
                 break;;
             "no")
@@ -174,8 +174,8 @@ initiate_sh_submit(){
 	#
 	echo "#SBATCH --mail-user=$emailbyuser" >> submit_job.sh
 	echo "#SBATCH --mail-type=ALL" >> submit_job.sh
-	echo "#SBATCH --output=%A.out" >> submit_job.sh
-	echo "#SBATCH --error=%A.err" >> submit_job.sh
+	echo "#SBATCH --output=out.out" >> submit_job.sh
+	echo "#SBATCH --error=err.err" >> submit_job.sh
 	# 
 	if [ "$archfromselections" != "NONE" ]; then
 		echo "#SBATCH --constraint=$archfromselections" >> submit_job.sh
@@ -244,9 +244,11 @@ get_cluster_name(){
 node_state(){
 	echo pay attention to the timelimit the nodes are configured into, to make a wise time request when submitting your job. 
 	echo nodes on $cluster are configured as shown bellow, note the timelimit and the number of nodes set to have such timelimits and then their availability
-	echo "columns are: PARTITION          AVAIL  TIMELIMIT   NODES(A/I/O/T) NODELIST"
+	#echo "columns are: PARTITION          AVAIL  TIMELIMIT   NODES(A/I/O/T) NODELIST"
+ 	echo "columns are: CPUS    MEMORY   GRES          NODES(A/I/O/T)  NODELIST"
 	echo +++++
-	sinfo -s
+	#sinfo -s
+ 	sinfo -eO "CPUs:8,Memory:9,Gres:14,NodeAIOT:16,NodeList:50"
 	echo +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	echo do you want to see a full report on state of nodes? 
 	echo ">>> this generate a long list, but should give you a more efficient node selection ability."
@@ -254,10 +256,10 @@ node_state(){
 	case $showmenodestate in
 		"yes")
 			echo generating long text, scroll back to read throughly 
-			echo from list above, current state of nodes Allocated/Inuse/Other/Total is .... 
-			echo "columns are: CPUS    MEMORY   GRES          NODES(A/I/O/T)  NODELIST"
-			echo +++++
-			sinfo -eO "CPUs:8,Memory:9,Gres:14,NodeAIOT:16,NodeList:50"
+			#echo from list above, current state of nodes Allocated/Inuse/Other/Total is .... 
+			#echo "columns are: CPUS    MEMORY   GRES          NODES(A/I/O/T)  NODELIST"
+			#echo +++++
+			#sinfo -eO "CPUs:8,Memory:9,Gres:14,NodeAIOT:16,NodeList:50"
 			echo +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			echo idle nodes that are totally accessible right now are .... 
 			echo "columns are: PARTITION          AVAIL  TIMELIMIT  NODES  STATE NODELIST"
@@ -762,8 +764,7 @@ this_is_new_job(){
 					echo 'user declined to retry, terminating fully.'
 					exit 1 # could use set -e but this is better for debugging 
 				fi
-			fi
-			break
+   			fi
 		else
 			echo 'you must provide input file name'
 		fi 
