@@ -675,9 +675,9 @@ show_cluster_options(){
 where_is_comsol(){
 	case $cluster_name in
 		"sockeye")
-			echo 'on ' $cluster_name ' SOCKEYE UBC ARC comsol is compiled manually at path (relative to home): ../../arc/project/st-amadiseh-1/comsol/comsol62/multiphysics/bin'
+			echo 'on ' $cluster_name ' SOCKEYE UBC ARC comsol is compiled manually at path (relative to home): //arc/project/st-amadiseh-1/comsol/comsol62/multiphysics/bin'
 			echo 'writing comsol path to template sh file'
-			echo "PATH2COMSOL='../../../../arc/project/st-amadiseh-1/comsol/comsol62/multiphysics/bin'" >> submit_job.sh
+			echo "PATH2COMSOL='//arc/project/st-amadiseh-1/comsol/comsol62/multiphysics/bin'" >> submit_job.sh
 			echo 'writing done.'
 			#
 			echo 'declaring and writing gcc, opemmpi and java path in template sh file'
@@ -913,11 +913,34 @@ running_for_specific_parameter(){
 		fi 
 	done 
 }
+# ----------------------------- calling a method? 
+caling_a_method(){
+	read -p "does this run call a specific method? (yes/no) = " itis4method
+	while true; do 
+		if [ -n $itis4itis4method ]; then
+			case $itis4itis4method in 
+				[Nn]*)
+					echo 'no specific method is set and sent - this is a normal run'
+					COMSOL_METHOD_=' '
+					break;;
+				[Yy]*)
+					read -p "enter NAME of method to be called: " method_name
+					echo 'sent specifications to comsol call.'
+					COMSOL_METHOD_="methodcall ${list_of_parameters}"
+					break;;
+				*) 
+					echo "field left empty"
+			esac 
+		else
+			echo 'field cannot left blank'
+		fi 
+	done 
+}
 # ----------------------------- running comsol 
 submit_for_comsol(){
 	logfilepath=$jobnamebyuser.log
 	COMSOL_BASE_COMMAND="batch -mpibootstrap slurm -inputfile ${inputmph} -outputfile ${outputmph} -batchlog ${logfilepath} -tmpdir ${TMPDIR} -recoverydir ${RECDIR}  -alivetime 15"
-	echo ${CALL_COMSOL_AS}' '${COMSOL_BASE_COMMAND}' '${COMSOL_EXTRA_}' '${COMSOL_CONTINUE}' '${COMSOL_PARAMS_} >> 'submit_job.sh'
+	echo ${CALL_COMSOL_AS}' '${COMSOL_BASE_COMMAND}' '${COMSOL_EXTRA_}' '${COMSOL_CONTINUE}' '${COMSOL_PARAMS_}' '${COMSOL_METHOD_} >> 'submit_job.sh'
 	#
 	echo if you submit this jon NOW, it will probably starting at .... 
 	echo "this info is very volatite, given how CCDB is configured (it forgets allocated nodes and reschdules everything every 15 minutes)"
